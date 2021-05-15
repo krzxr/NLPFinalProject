@@ -31,7 +31,7 @@ def shuffle_words(text):
     random.shuffle(L)
     return ' '.join(L)
 
-def get_train_test(input_file, sentences_shuffle=False, words_shuffle=False):
+def get_train_test(input_file):
     data = pickle.load(open(input_file,'rb'))
     train = data['train']
     random.shuffle(train)
@@ -39,7 +39,7 @@ def get_train_test(input_file, sentences_shuffle=False, words_shuffle=False):
     random.shuffle(test)
     # print(len(train))
     # print(train[1])
-
+    '''
     if sentences_shuffle:
         train = [(shuffle_sentences(instance[0]), instance[1]) for instance in train]
         test = [(shuffle_sentences(instance[0]), instance[1]) for instance in test]
@@ -47,7 +47,7 @@ def get_train_test(input_file, sentences_shuffle=False, words_shuffle=False):
     if words_shuffle:
         train = [(shuffle_words(instance[0]), instance[1]) for instance in train]
         test = [(shuffle_words(instance[0]), instance[1]) for instance in test]
-
+    '''
     train_texts = [instance[0] for instance in train]
     #train_labels = torch.tensor([int(instance[1]) for instance in train]).unsqueeze(0)
     train_labels = [int(instance[1]) for instance in train]    
@@ -90,10 +90,11 @@ def trainer_finetune(name,epochs,lr,optimizer,model,train_dataset,test_dataset):
         adam_epsilon = 1e-8,
         max_grad_norm = 1,
         num_train_epochs=epochs,              # total # of training epochs
-        warmup_steps = 100,
+        warmup_steps = 500,
         logging_steps = 500,
         logging_dir='./logs/'+name,    # directory for storing logs
-        save_steps = 1000,
+        load_best_model_at_end = True,
+        #save_steps=1000,
     )
     trainer = Trainer(
         model=model,                         # the instantiated Transformers model to be trained

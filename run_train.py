@@ -1,19 +1,33 @@
 from model import *
 from train import *
 import os
+import argparse
 #must modify model's num_labels as well
-input_file_name = 'train_80_test_10_valid_top_2.pkl'
-epochs = 5
-lr = 5e-4
-attempt = 3
+parser = argparse.ArgumentParser(description='train')
+parser.add_argument("--file", "-f", required=True,
+                        help="filename")
+parser.add_argument("--lr", "-lr", required=False, default = 5e-3, type=float,
+                        help="lr, default 5e-3")
+parser.add_argument("--attempt", "-a", default=0,required=False,help='attempt number')
+parser.add_argument("--epochs", "-e", default=5,required=False,type=int,help='num epoch')
+args = parser.parse_args()
+fname = args.file+'_2authors'
+fdir = './datasets/'+fname+'/'+fname+'_t80t10v10.pkl'
+print('\n'+fdir+'\n')
+epochs = int(args.epochs)
+lr = float(args.lr)
+attempt = int(args.attempt)
+'''
 sentences_shuffle = False
 words_shuffle = True
-name = input_file_name.split('.')[0]+'_epochs_'+str(epochs)+"_attempt_"+str(attempt)
-name += "_shuffle_sent" if sentences_shuffle else ""
-name += "_shuffle_word" if words_shuffle else ""
+'''
+name = fname+"_attempt_"+str(attempt)+'_epochs_'+str(epochs)+'_lr_'+str(lr)
+print('\nname',name+'\n')
+#name += "_shuffle_sent" if sentences_shuffle else ""
+#name += "_shuffle_word" if words_shuffle else ""
 if not os.path.exists('./logs/'+name):
     os.mkdir('./logs/'+name)
 if not os.path.exists('./results/'+name):
     os.mkdir('./results/'+name)
-train,test = get_train_test(input_file_name, sentences_shuffle, words_shuffle)
+train,test = get_train_test(fdir)
 trainer_finetune(name,epochs,lr,optimizer,model,train,test)

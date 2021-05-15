@@ -20,17 +20,8 @@ class BlogsDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.labels)
 
-def shuffle_sentences(text):
-    L = text.split('.')
-    random.shuffle(L)
-    return '. '.join(L) + '.'
 
-def shuffle_words(text):
-    L = text.split(' ')
-    random.shuffle(L)
-    return ' '.join(L)
-
-def get_train_test(input_file, sentences_shuffle=False, words_shuffle=False):
+def get_train_test(input_file):
     data = pickle.load(open(input_file,'rb'))
     train = data['train']
     random.shuffle(train)
@@ -40,7 +31,7 @@ def get_train_test(input_file, sentences_shuffle=False, words_shuffle=False):
     # print(train[1])
 
     # print(train[6][0])
-
+    '''
     if sentences_shuffle:
         train = [(shuffle_sentences(instance[0]), instance[1]) for instance in train]
         test = [(shuffle_sentences(instance[0]), instance[1]) for instance in test]
@@ -48,7 +39,7 @@ def get_train_test(input_file, sentences_shuffle=False, words_shuffle=False):
     if words_shuffle:
         train = [(shuffle_words(instance[0]), instance[1]) for instance in train]
         test = [(shuffle_words(instance[0]), instance[1]) for instance in test]
-
+    '''
     train_texts = [instance[0] for instance in train]
     #train_labels = torch.tensor([int(instance[1]) for instance in train]).unsqueeze(0)
     train_labels = [int(instance[1]) for instance in train]    
@@ -71,4 +62,4 @@ def get_train_test(input_file, sentences_shuffle=False, words_shuffle=False):
     train_dataset = BlogsDataset(train_encodings, train_labels)
     test_dataset = BlogsDataset(test_encodings, test_labels)
 
-    #return train_dataset, test_dataset
+    return train_dataset, test_dataset
